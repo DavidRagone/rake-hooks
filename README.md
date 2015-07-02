@@ -2,8 +2,10 @@
 
 Rake hooks let you add callbacks to rake:
 
-[![Build Status](https://secure.travis-ci.org/guillermo/rake-hooks.png)](http://travis-ci.org/guillermo/rake-hooks)
-[![endorse](http://api.coderwall.com/guillermo/endorsecount.png)](http://coderwall.com/guillermo)
+[![Circle
+CI](https://circleci.com/gh/DavidRagone/rake-hooks.svg?style=svg)](https://circleci.com/gh/DavidRagone/rake-hooks)
+[![Code
+Climate](https://codeclimate.com/github/DavidRagone/rake-hooks/badges/gpa.svg)](https://codeclimate.com/github/DavidRagone/rake-hooks)
 
 
 ## Usage
@@ -73,6 +75,3 @@ With other systems
 
 http://github.com/guillermo/rake-hooks
 
-## Date of writing 
-
-9 Sep 2011
