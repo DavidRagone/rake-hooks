@@ -73,6 +73,18 @@ class TestRakeHooks < Test::Unit::TestCase
     assert_equal "I love wadus way.", Store.to_s
   end
 
+  def test_around
+    task :original do Store << 'original' ; end
+    around :original do |original|
+      Store << 'before '
+      original.invoke
+      Store << ' after'
+    end
+
+    execute(:original)
+    assert_equal "before original after", Store.to_s
+  end
+
   def test_save_comment_on_after_tasks
     desc 'this is my task'
     task :my_task do ; end
@@ -81,12 +93,22 @@ class TestRakeHooks < Test::Unit::TestCase
     assert_equal "this is my task", Rake::Task[:my_task].full_comment
   end
 
-
   def test_save_comment_on_before_tasks
     desc 'this is my task'
     task :my_task2 do ; end
 
     before :my_task2 do; end
+    assert_equal "this is my task", Rake::Task[:my_task2].full_comment
+  end
+
+  def test_save_comment_on_around_tasks
+    desc 'this is my task'
+    task :my_task2 do ; end
+
+    around :my_task2 do |original|
+      original.invoke
+    end
+
     assert_equal "this is my task", Rake::Task[:my_task2].full_comment
   end
 
@@ -108,6 +130,18 @@ class TestRakeHooks < Test::Unit::TestCase
     assert_equal ['a'], Rake::Task[:b].prerequisites
   end
 
+  def test_prerequisites_run_with_around_tasks
+    task :a       do ; end
+    task :b => :a do ; end
+
+    assert_equal ['a'], Rake::Task[:b].prerequisites
+    around :b do |original|
+      original.invoke
+    end
+
+    assert_equal ['a'], Rake::Task[:b].prerequisites
+  end
+
   def test_prerequisites_run_before_before_tasks
     task   :a       do Store << "a" ; end
     task   :b => :a do Store << "b" ; end
@@ -124,6 +158,20 @@ class TestRakeHooks < Test::Unit::TestCase
 
     invoke(:b)
     assert_equal "ab-AFTER-", Store.to_s
+  end
+
+  def test_prerequisites_run_before_around_tasks
+    task  :a       do Store << "a"       ; end
+    task  :b => :a do Store << "b"       ; end
+
+    around :b do |original|
+      Store << "-FIRST-"
+      original.invoke
+      Store << "-LAST-"
+    end
+
+    invoke(:b)
+    assert_equal "a-FIRST-b-LAST-", Store.to_s
   end
 
   def test_raise_exceptions_on_after_task

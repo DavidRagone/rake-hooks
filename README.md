@@ -51,6 +51,33 @@ before :say_hello, :say_goodbye do
 end
 ```
 
+If you need to save local state in your tasks, you can use `around`. **Note**
+that the block you pass to `around` should expect a parameter, which is the
+original rake task. In order for this task to run, you need to call `#invoke` on
+it at whatever point you want it run.
+
+```ruby
+require 'rake/hooks'
+
+task :slow_things do
+  sleep rand 5
+end
+
+around :slow_things do |original|
+  start = Time.now
+  original.invoke
+  finished = Time.now
+  puts "Task took #{finished - start} seconds"
+end
+```
+
+Now run with rake
+
+```bash
+$ rake slow_things
+Task took 3.004006 seconds
+```
+
 
 ## Installation
 

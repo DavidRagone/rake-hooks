@@ -25,6 +25,14 @@ module Rake::Hooks
     end
   end
 
+  def around(*task_names, &surround_block)
+    task_names.each do |task_name|
+      rewrite_old_task!(task_name) do |old_task|
+        surround_block.call(old_task)
+      end
+    end
+  end
+
   private
 
   def rewrite_old_task!(task_name, &_then)
