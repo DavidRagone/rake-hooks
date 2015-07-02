@@ -127,14 +127,25 @@ class TestRakeHooks < Test::Unit::TestCase
   end
 
   def test_raise_exceptions_on_after_task
-    task  :a do raise "ERROR"      ; end
-    after :a do Store << "-AFTER-" ; end
+    task  :a do  Store << "a" ; end
+    after :a do raise "ERROR"       ; end
 
     assert_raise RuntimeError do
       invoke(:a)
     end
 
-    assert_equal "", Store.to_s
+    assert_equal "a", Store.to_s
+  end
+
+  def test_raise_exceptions_maintains_exception_type
+    task  :a do  Store << "a" ; end
+    after :a do raise NoMethodError       ; end
+
+    assert_raise NoMethodError do
+      invoke(:a)
+    end
+
+    assert_equal "a", Store.to_s
   end
 
   def test_ignore_exceptions_on_after_task
